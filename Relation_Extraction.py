@@ -1,13 +1,17 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 from pyopenie import OpenIE5
 import json
-import requests 
 
 st.title('Streamlit Relation Extraction')
 
-extractor = OpenIE5('http://18.208.212.160:8000')
+url = 'http://18.208.212.160:8000'
+
+@st.cache
+def connect_to_server(url):
+    return OpenIE5(url)
+    
+extractor = connect_to_server(url)
 
 df = pd.DataFrame(columns = ['Entity 1','Relation','Entity 2','Confidence','Context'])
 
@@ -107,13 +111,9 @@ def display_info(arg1,relation,arg2,confidence,context,negation,df):
         df.drop_duplicates(inplace=True)
         st.dataframe(df)
 
-
 with st.form(key='my_form'):
     text_input = st.text_input(label='Enter text')
     submit_button = st.form_submit_button(label='Submit')
 if submit_button:
     info_text(text_input)
     display_info(arg1,relation,arg2,confidence,context,negated,df)
-
-#The Kia Sonet looks good but actually sucks.
-#My mother didn't think the movie was logical.
